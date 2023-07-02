@@ -1,68 +1,21 @@
 const express = require('express');
 const connectDB = require('./db');
-const User = require('./models/UserModel');
-const bcrypt = require('bcrypt');
+const authentication = require('./middleware/authenticate');
+const routes = require('./routes');
 
 const app = express();
 app.use(express.json());
 
-// User Registration
-app.post('/registration', async (req, res, next) => {
-    const { name, email, password } = req.body;
-    // check data is valid or not
-    if (!name || !email || !password) {
-        return res.status(400).json({message: 'Invalid data'});
-    }
-    try {
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({message: 'User already exists'});
-        }
-    
-        user = new User({ name, email, password })
-    
-        // hash password
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-        user.password = hash;
-        await user.save();
-        return res.status(201).json({message: 'User create successfully', user});
-    } catch (error) {
-        next(error)
-    }
+app.use(routes);
+
+app.get('/private', authentication, async (req, res) => {
+    console.log('I am user: ', req.user);
+    return res.status(200).json({ message: "I am private route" });
+});
+
+app.get('/public', (req, res) => {
+    res.status(200).json({ message: "I am public route" });
 })
-
-// User Login
-app.post('/login', async (req, res, next) => {
-    // start
-    // email,password = from user
-    // user = find user with email
-    // if(user not found)
-    // return 400
-    // if(password not match hashPassword)
-    // return 400
-    // token = generate token using user
-    // return token
-    // end
-    const { email, password } = req.body;
-    try {
-        let user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({message: "Invalid Credential"})
-        }
-        // compare password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({message: "Invalid Credential"})
-        }
-
-        delete user._doc.password;
-        res.status(200).json({ message: "Successfully Login", user});
-    } catch (err) {
-        next(err)
-    }
-})
-
 
 app.get('/', (_, res) => {
     res.send("Home page");
@@ -71,7 +24,9 @@ app.get('/', (_, res) => {
 // global error handle
 app.use((err, req, res, next) => {
     console.log(err);
-    res.status(500).json({message: "Server Error Occurred"})
+    const message = err.message ? err.message : 'Server Error Occurred';
+    const status = err.status ? err.status : 500;
+    res.status(status).json({message})
 })
 
 // database connected
@@ -79,7 +34,7 @@ connectDB('mongodb://127.0.0.1:27017/attendanceSystem')
     .then(() => {
         console.log('Database connected');
         app.listen(4000, () => {
-            console.log('App run on port 8000');
+            console.log('App run on port 4000');
         })
     }).catch(err => {
         console.log(err);
