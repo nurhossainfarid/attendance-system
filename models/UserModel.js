@@ -26,14 +26,14 @@ const userSchema = new Schema({
     },
     roles: {
         type: [String],
-        required: [true, 'Provide your role'],
         default: ['STUDENT'],
+        required: [true, 'Provide your role'],
     },
     accountStatus: {
         type: String,
         required: true,
-        enum: ["PENDING", "ACTIVE", "REJECTED",],
         default: 'PENDING',
+        enum: ["PENDING", "ACTIVE", "REJECTED",],
     }
 })
 

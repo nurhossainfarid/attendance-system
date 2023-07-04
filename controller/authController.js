@@ -4,13 +4,19 @@ const bcrypt = require('bcrypt');
 const { registrationService, loginService } = require('../services/authService');
 
 exports.registrationController = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password,roles, accountStatus } = req.body;
     // check data is valid or not
     if (!name || !email || !password) {
         return res.status(400).json({message: 'Invalid data'});
     }
     try {
-        const user = await registrationService({name, email, password});
+        const user = await registrationService({
+            name,
+            email,
+            password,
+            roles,
+            accountStatus
+        });
         return res
             .status(201)
             .json({ message: 'User create successfully', user });
