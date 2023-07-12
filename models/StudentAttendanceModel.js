@@ -5,13 +5,12 @@ const studentAttendanceSchema = new Schema({
     user: {
         type: ObjectId,
         ref: 'User',
-    },
-    createdAt: {
-        type: Date,
+        required: [true, "User id is required"]
     },
     adminAttendance: {
         type: ObjectId,
         ref: 'AdminAttendance',
+        required: [true, "Attendance id is required"]
     }
 });
 
