@@ -22,7 +22,8 @@ const getAttendanceDisable = async (_req, res, next) => {
 
 const getAttendanceStatus = async (_req, res, next) => {
     try {
-        
+        const status = await adminAttendanceServices.checkAttendanceStatus();
+        res.status(200).json(status);
     } catch (err) {
         next(err);
     }

@@ -3,6 +3,6 @@ const adminAttendanceController = require('../controller/adminAttendanceControll
 
 router.get('/enable', adminAttendanceController.getAttendanceEnable);
 router.get('/disable', () => {})
-router.get('/status', () => {})
+router.get('/status', adminAttendanceController.getAttendanceStatus)
 
 module.exports = router;
