@@ -11,8 +11,13 @@ const enableAnAttendance = async () => {
     return attendance.save();
 }
 
-const disableAnAttendance = () => {
-
+const disableAnAttendance = async () => {
+    let running = await AdminAttendance.findOne({ status: "RUNNING" });
+    if (!running) {
+        throw error("Not running", 400);
+    }
+    running.status = "COMPLETED";
+    return running.save();
 }
 
 const checkAttendanceStatus = async () => {
